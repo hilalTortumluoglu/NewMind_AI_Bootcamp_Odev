@@ -69,7 +69,7 @@ MERGE (law:Department {name: "Law"});
 MERGE (fn:Department {name: "Finance"});
 MERGE (ecs:Department {name: "Energy and Cooling Systems"});
 
-//person-departman relation
+//Person-department relation
 MATCH (ali:Person {name: "Ali Kaya"}), (rd:Department {name: "R&D"})
 MERGE (ali)-[:IN {start_date: date("2020-03-02"), status: "current"}]->(rd);
 
@@ -187,7 +187,7 @@ WHERE s.name IN ["NLP", "AI Law"]
 MERGE (p)-[:REQUIRES]->(s);
 
  
-// Person – Project ilişkileri (WORKED_ON)
+// Person – Project relation
 
 MATCH (ali:Person {name:"Ali Kaya"}), (p1:Project {name:"AI Recommendation Engine"})
 MERGE (ali)-[:WORKED_ON { role: "Backend Developer" }]->(p1);
@@ -216,13 +216,12 @@ MATCH (zeynep:Person {name:"Zeynep Arslan"}), (ahmet:Person {name:"Ahmet Çelik"
 MERGE (zeynep)-[:COLLABORATED_WITH { project_name: "Legal Document Analyzer" }]->(ahmet);
 
 
-// Person – Certificate ilişkileri (HAS_CERTIFICATE)
+// Person – Certificate relation
 MERGE (cert1:Certificate {name:"AWS Certified Solutions Architect"})
   ON CREATE SET cert1.issuer="Amazon", cert1.year=2023;
 MERGE (cert2:Certificate {name:"IBM Data Science Professional"})
   ON CREATE SET cert2.issuer="IBM", cert2.year=2022;
 
-// Şimdi ilişkileri ekleyelim
 MATCH (ayse:Person {name:"Ayşe Yılmaz"}), (cert1:Certificate {name:"AWS Certified Solutions Architect"})
 MERGE (ayse)-[:HAS_CERTIFICATE { date_obtained: date("2022-11-05") }]->(cert1);
 
