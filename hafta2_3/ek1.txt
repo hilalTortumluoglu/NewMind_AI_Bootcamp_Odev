@@ -1,0 +1,230 @@
+CREATE CONSTRAINT department_name IF NOT EXISTS FOR (d:Department) REQUIRE d.name IS UNIQUE;
+CREATE CONSTRAINT person_name IF NOT EXISTS FOR (p:Person) REQUIRE p.name IS UNIQUE;
+CREATE CONSTRAINT skill_name IF NOT EXISTS FOR (s:Skill) REQUIRE s.name IS UNIQUE;
+CREATE CONSTRAINT project_name IF NOT EXISTS FOR (pr:Project) REQUIRE pr.name IS UNIQUE;
+CREATE CONSTRAINT certificate_name IF NOT EXISTS FOR (c:Certificate) REQUIRE c.name IS UNIQUE;
+
+// Person
+MERGE (ali:Person {name: "Ali Kaya"})
+  ON CREATE SET ali.title = "Web Developer",
+                ali.email = "ali_kaya@company.com",
+                ali.experience_years = 5,
+                ali.location = "İstanbul",
+                ali.joined_date = date("2020-03-02");
+
+MERGE (ayse:Person {name: "Ayşe Yılmaz"})
+  ON CREATE SET ayse.title = "Mobil Devoloper",
+                ayse.email = "ayse_yilmaz@company.com",
+                ayse.experience_years = 3,
+                ayse.location = "İstanbul",
+                ayse.joined_date = date("2021-07-10");
+
+MERGE (mehmet:Person {name: "Mehmet Demir"})
+  ON CREATE SET mehmet.title = "AI Engineer",
+                mehmet.email = "mehmet_demir@company.com",
+                mehmet.experience_years = 7,
+                mehmet.location = "İzmir",
+                mehmet.joined_date = date("2019-01-15");
+
+MERGE (zeynep:Person {name: "Zeynep Arslan"})
+  ON CREATE SET zeynep.title = "Legal Tech Specialist",
+                zeynep.email = "zeynep_arslan@company.com",
+                zeynep.experience_years = 4,
+                zeynep.location = "İstanbul",
+                zeynep.joined_date = date("2020-05-23");
+
+MERGE (ahmet:Person {name: "Ahmet Çelik"})
+  ON CREATE SET ahmet.title = "Patetnt Lawyer",
+                ahmet.email = "ahmet_celik@company.com",
+                ahmet.experience_years = 6,
+                ahmet.location = "Bursa",
+                ahmet.joined_date = date("2018-09-12");
+
+MERGE (elif:Person {name: "Elif Şahin"})
+  ON CREATE SET elif.title = "Financial Analyst",
+                elif.email = "elif_sahin@company.com",
+                elif.experience_years = 3,
+                elif.location = "Ankara",
+                elif.joined_date = date("2021-01-10");
+
+MERGE (bora:Person {name: "Bora Kılıç"})
+  ON CREATE SET bora.title = "Finance Manager",
+                bora.email = "bora_kilic@company.com",
+                bora.experience_years = 8,
+                bora.location = "İstanbul",
+                bora.joined_date = date("2017-03-25");
+
+MERGE (burak:Person {name: "Burak Aksoy"})
+  ON CREATE SET burak.title = "Energy and Cooling Engineer",
+                burak.email = "burak_aksoy@company.com",
+                burak.experience_years = 5,
+                burak.location = "Antalya",
+                burak.joined_date = date("2019-06-20");
+
+
+
+//Department
+MERGE (rd:Department {name: "R&D"});
+MERGE (law:Department {name: "Law"});
+MERGE (fn:Department {name: "Finance"});
+MERGE (ecs:Department {name: "Energy and Cooling Systems"});
+
+//person-departman relation
+MATCH (ali:Person {name: "Ali Kaya"}), (rd:Department {name: "R&D"})
+MERGE (ali)-[:IN {start_date: date("2020-03-02"), status: "current"}]->(rd);
+
+MATCH (ayse:Person {name: "Ayşe Yılmaz"}), (rd:Department {name: "R&D"})
+MERGE (ayse)-[:IN {start_date: date("2021-07-10"), status: "current"}]->(rd);
+
+MATCH (mehmet:Person {name: "Mehmet Demir"}), (rd:Department {name: "R&D"})
+MERGE (mehmet)-[:IN {start_date: date("2019-01-15"), status: "current"}]->(rd);
+
+MATCH (zeynep:Person {name: "Zeynep Arslan"}), (law:Department {name: "Law"})
+MERGE (zeynep)-[:IN {start_date: date("2020-05-23"), status: "current"}]->(law);
+
+MATCH (ahmet:Person {name: "Ahmet Çelik"}), (law:Department {name: "Law"})
+MERGE (ahmet)-[:IN {start_date: date("2018-09-12"), status: "current"}]->(law);
+
+MATCH (elif:Person {name: "Elif Şahin"}), (fn:Department {name: "Finance"})
+MERGE (elif)-[:IN {start_date: date("2021-01-10"), end_date: date("2022-02-10"), status: "transferred"}]->(fn);
+
+MATCH (elif:Person {name: "Elif Şahin"}), (rd:Department {name: "R&D"})
+MERGE (elif)-[:IN {start_date: date("2022-02-10"), status: "current"}]->(rd);
+
+MATCH (bora:Person {name: "Bora Kılıç"}), (rd:Department {name: "Finance"})
+MERGE (bora)-[:IN {start_date: date("2017-03-25"), status: "current"}]->(rd);
+
+MATCH (burak:Person {name: "Burak Aksoy"}), (ecs:Department {name: "Energy and Cooling Systems"})
+MERGE (burak)-[:IN {start_date: date("2019-06-20"), status: "current"}]->(ecs);
+
+// Skill 
+MERGE (nlp:Skill {name: "NLP"})
+  ON CREATE SET nlp.level = "Expert";
+
+MERGE (ds:Skill {name: "Data Science"})
+  ON CREATE SET ds.level = "Expert";
+
+MERGE (py:Skill {name: "Python"})
+  ON CREATE SET py.level = "Expert";
+
+MERGE (ja:Skill {name: "Java"})
+  ON CREATE SET ja.level = "Advanced";
+
+MERGE (kt:Skill {name: "Kotlin"})
+  ON CREATE SET kt.level = "Intermediate";
+
+MERGE (ail:Skill {name: "AI Law"})
+  ON CREATE SET ail.level = "Intermediate";
+  
+MERGE (php:Skill {name: "php"})
+  ON CREATE SET php.level = "Advanced";
+  
+//Person-skill relation
+MATCH (ali:Person {name: "Ali Kaya"}), (ja:Skill {name: "Java"})
+MERGE (ali)-[:KNOWS]->(ja);
+
+MATCH (ali:Person {name: "Ali Kaya"}), (php:Skill {name: "php"})
+MERGE (ali)-[:KNOWS]->(php);
+
+MATCH (ayse:Person {name: "Ayşe Yılmaz"}), (kt:Skill {name: "Kotlin"})
+MERGE (ayse)-[:KNOWS]->(kt);
+
+MATCH (mehmet:Person {name: "Mehmet Demir"}), (nlp:Skill {name: "NLP"})
+MERGE (mehmet)-[:KNOWS]->(nlp);
+
+MATCH (mehmet:Person {name: "Mehmet Demir"}), (py:Skill {name: "Python"})
+MERGE (mehmet)-[:KNOWS]->(py);
+
+MATCH (zeynep:Person {name: "Zeynep Arslan"}), (ail:Skill {name: "AI Law"})
+MERGE (zeynep)-[:KNOWS]->(ail);
+
+MATCH (elif:Person {name: "Elif Şahin"}), (py:Skill {name: "Python"})
+MERGE (elif)-[:KNOWS]->(py);
+
+MATCH (elif:Person {name: "Elif Şahin"}), (nlp:Skill {name: "NLP"})
+MERGE (elif)-[:KNOWS]->(nlp);
+
+MATCH (elif:Person {name: "Elif Şahin"}), (ds:Skill {name: "Data Science"})
+MERGE (elif)-[:KNOWS]->(ds);
+
+MATCH (bora:Person {name: "Bora Kılıç"}), (ds:Skill {name: "Data Science"})
+MERGE (bora)-[:KNOWS]->(ds);
+
+
+//Project
+MERGE (p1:Project {name: "AI Recommendation Engine"})
+  ON CREATE SET 
+    p1.start_date = date("2024-04-01"),
+    p1.end_date   = date("2024-10-31"),
+    p1.status     = "Active",
+    p1.description= "Kullanıcı davranışlarına dayalı öneri sisteminin geliştirilmesi";
+
+MERGE (p2:Project {name: "Mobile Banking App"})
+  ON CREATE SET 
+    p2.start_date = date("2023-11-15"),
+    p2.end_date   = date("2024-05-30"),
+    p2.status     = "Completed",
+    p2.description= "Bankacılık işlemlerini mobil üzerinden sunan uygulama";
+
+MERGE (p3:Project {name: "Legal Document Analyzer"})
+  ON CREATE SET 
+    p3.start_date = date("2024-02-10"),
+    p3.status     = "Active",
+    p3.description= "Hukuki belgeleri NLP ile analiz eden araç geliştirme";
+
+// Project-skill relation 
+
+MATCH (p:Project {name: "AI Recommendation Engine"}), (s:Skill)
+WHERE s.name IN ["Python", "Data Science", "NLP"]
+MERGE (p)-[:REQUIRES]->(s);
+
+MATCH (p:Project {name: "Mobile Banking App"}), (s:Skill)
+WHERE s.name IN ["Java", "Kotlin", "PHP"]
+MERGE (p)-[:REQUIRES]->(s);
+
+MATCH (p:Project {name: "Legal Document Analyzer"}), (s:Skill)
+WHERE s.name IN ["NLP", "AI Law"]
+MERGE (p)-[:REQUIRES]->(s);
+
+ 
+// Person – Project ilişkileri (WORKED_ON)
+
+MATCH (ali:Person {name:"Ali Kaya"}), (p1:Project {name:"AI Recommendation Engine"})
+MERGE (ali)-[:WORKED_ON { role: "Backend Developer" }]->(p1);
+
+MATCH (ayse:Person {name:"Ayşe Yılmaz"}), (p2:Project {name:"Mobile Banking App"})
+MERGE (ayse)-[:WORKED_ON { role: "Mobile Developer" }]->(p2);
+
+MATCH (mehmet:Person {name:"Mehmet Demir"}), (p1:Project {name:"AI Recommendation Engine"})
+MERGE (mehmet)-[:WORKED_ON { role: "AI Engineer" }]->(p1);
+
+MATCH (zeynep:Person {name:"Zeynep Arslan"}), (p3:Project {name:"Legal Document Analyzer"})
+MERGE (zeynep)-[:WORKED_ON { role: "Legal Tech Specialist" }]->(p3);
+
+MATCH (ahmet:Person {name:"Ahmet Çelik"}), (p3:Project {name:"Legal Document Analyzer"})
+MERGE (ahmet)-[:WORKED_ON { role: "Patent Lawyer" }]->(p3);
+
+
+// Person – Person ilişkileri (COLLABORATED_WITH)
+MATCH (ali:Person {name:"Ali Kaya"}), (mehmet:Person {name:"Mehmet Demir"})
+MERGE (ali)-[:COLLABORATED_WITH { project_name: "AI Recommendation Engine" }]->(mehmet);
+
+MATCH (ayse:Person {name:"Ayşe Yılmaz"}), (bora:Person {name:"Bora Kılıç"})
+MERGE (ayse)-[:COLLABORATED_WITH { project_name: "Mobile Banking App" }]->(bora);
+
+MATCH (zeynep:Person {name:"Zeynep Arslan"}), (ahmet:Person {name:"Ahmet Çelik"})
+MERGE (zeynep)-[:COLLABORATED_WITH { project_name: "Legal Document Analyzer" }]->(ahmet);
+
+
+// Person – Certificate ilişkileri (HAS_CERTIFICATE)
+MERGE (cert1:Certificate {name:"AWS Certified Solutions Architect"})
+  ON CREATE SET cert1.issuer="Amazon", cert1.year=2023;
+MERGE (cert2:Certificate {name:"IBM Data Science Professional"})
+  ON CREATE SET cert2.issuer="IBM", cert2.year=2022;
+
+// Şimdi ilişkileri ekleyelim
+MATCH (ayse:Person {name:"Ayşe Yılmaz"}), (cert1:Certificate {name:"AWS Certified Solutions Architect"})
+MERGE (ayse)-[:HAS_CERTIFICATE { date_obtained: date("2022-11-05") }]->(cert1);
+
+MATCH (ali:Person {name:"Ali Kaya"}), (cert2:Certificate {name:"IBM Data Science Professional"})
+MERGE (ali)-[:HAS_CERTIFICATE { date_obtained: date("2021-08-20") }]->(cert2);
