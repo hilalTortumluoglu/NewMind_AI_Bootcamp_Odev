@@ -1,0 +1,62 @@
+CREATE CONSTRAINT Airport_id IF NOT EXISTS
+FOR (a:Airport) REQUIRE a.id IS UNIQUE;
+
+CREATE CONSTRAINT Country_name IF NOT EXISTS
+FOR (c:Country) REQUIRE c.name IS UNIQUE;
+
+CREATE CONSTRAINT Airline_id IF NOT EXISTS
+FOR (a:Airline) REQUIRE a.id IS UNIQUE;
+
+CREATE CONSTRAINT Flight_id IF NOT EXISTS
+FOR (f:Flight) REQUIRE f.id IS UNIQUE;
+
+LOAD CSV FROM "https://raw.githubusercontent.com/jpatokal/openflights/master/data/countries.dat" AS row
+WITH row, {iso_code: row[1], dafif_code: row[2]} AS properties
+
+MERGE (c:Country {name: row[0]})
+SET c += properties;
+
+LOAD CSV FROM "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat" AS row
+WITH row, {name: row[1],IATA: row[4], ICAO: row[5], timezone: row[9], DST: row[10], tz_database_timezone: row[11], longitude: toFloat(row[7]), latitude: toFloat(row[6]), altitude: toFloat(row[8])} AS properties
+
+MERGE (a:Airport {id: row[0]})
+SET a += properties
+
+WITH a,row
+MATCH(c:Country{name:row[3]})
+MERGE (a)-[l:LOCATED_IN]->(c)
+SET l.city = row[2];
+
+LOAD CSV FROM "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airlines.dat" AS row
+WITH row, {name: row[1], alias: row[2], IATA: row[3], ICAO: row[4], callsign: row[5], active: row[7]} AS properties
+
+MERGE (a:Airline {id: row[0]})
+SET a += properties
+
+WITH a,row
+MATCH (c:Country{name:row[6]})
+MERGE (a)-[:BASED_IN]->(c);
+
+LOAD CSV FROM "https://raw.githubusercontent.com/jpatokal/openflights/master/data/airlines.dat" AS row
+WITH row, {name: row[1], alias: row[2], IATA: row[3], ICAO: row[4], callsign: row[5], country: row[6], active: row[7]} AS properties
+
+MERGE (a:Airline {id: row[0]})
+SET a += properties;
+
+
+LOAD CSV FROM "https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat"  AS row
+WITH row
+WHERE row[1] <> "\\N" AND row[3] <> "\\N" AND row[5] <> "\\N"
+
+MATCH (src:Airport {id: row[3]})
+MATCH (dst:Airport {id: row[5]})
+MATCH (al:Airline {id: row[1]})
+
+MERGE (f:Flight {id: row[3] + '-' + row[1] + '-' + row[5]})
+SET f.codeshare = row[6],
+    f.stops = toInteger(row[7]),
+    f.equipment = row[8]
+
+CREATE (f)-[:SOURCE]->(src)
+CREATE (f)-[:DESTINATION]->(dst)
+CREATE (al)-[:OPERATES]->(f);
